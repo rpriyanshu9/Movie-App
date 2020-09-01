@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/fetch_data/fetch_info.dart';
 import 'package:movie_app/models/movies.dart';
+import 'package:movie_app/shared/config.dart';
+import 'package:movie_app/shared/dark_theme.dart';
 
 const String baseUrl = 'https://api.themoviedb.org/3';
 
@@ -33,6 +35,18 @@ class _PopularMovieState extends State<PopularMovie> {
             resizeToAvoidBottomPadding: false,
             appBar: AppBar(
               title: Text('Movie App'),
+              actions: [
+                FlatButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        currentTheme.switchTheme();
+                      });
+                    },
+                    icon: !MyTheme.isDark
+                        ? Icon(Icons.brightness_low)
+                        : Icon(Icons.brightness_high),
+                    label: Text(""))
+              ],
             ),
             body: SingleChildScrollView(
               child: Container(
