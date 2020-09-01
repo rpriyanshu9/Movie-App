@@ -16,19 +16,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<Movies> futureMovies;
+  Future<Movies> futurePopularMovies;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    futureMovies = fetchInfo();
+    futurePopularMovies = fetchPopularMovies();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Movies>(
-      future: futureMovies,
+      future: futurePopularMovies,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           // print(snapshot.data.posterPath[0]['poster_path']);
