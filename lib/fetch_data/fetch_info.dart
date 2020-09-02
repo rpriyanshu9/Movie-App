@@ -27,3 +27,15 @@ $baseURL/movie/$movieId?api_key=$_apiKey&language=en-US""");
     throw Exception("Failed to load");
   }
 }
+
+// Future<MovieDetails> fetchMovieDetail(int movieId) async {
+//   String _apiKey = apiKey;
+//   String baseURL = "https://api.themoviedb.org/3";
+//   final response = await http.get("""
+// $baseURL/movie/$movieId?api_key=$_apiKey&language=en-US""");
+//   if (response.statusCode == 200) {
+//     return MovieDetails.fromJson(json.decode(response.body));
+//   } else {
+//     throw Exception("Failed to load");
+//   }
+// }
