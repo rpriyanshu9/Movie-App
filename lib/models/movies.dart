@@ -1,19 +1,12 @@
-class Movies{
-  final String originalTitle;
-  final String releaseDate;
-  final List<dynamic> posterPath;
-  final int id;
+class PopularMovies {
+  final List<dynamic> result;
 
-  Movies({this.id, this.originalTitle, this.posterPath, this.releaseDate});
+  PopularMovies({this.result});
 
-  factory Movies.fromJson(Map<String, dynamic> json) {
+  factory PopularMovies.fromJson(Map<String, dynamic> json) {
     List<dynamic> data = json['results'];
     // print(data);
-    return Movies(
-        id: data[0]['id'],
-        originalTitle: data[0]['original_title'],
-        posterPath: data,
-        releaseDate: data[0]['release_date']);
+    return PopularMovies(result: data);
   }
 }
 
@@ -42,27 +35,29 @@ class MovieDetails {
   }
 }
 
-// class MovieDetails {
-//   final String posterPath;
-//   final String originalTitle;
-//   final String overview;
-//   final double popularity;
-//   final String releaseDate;
-//
-//   MovieDetails(
-//       {this.posterPath,
-//         this.originalTitle,
-//         this.popularity,
-//         this.overview,
-//         this.releaseDate});
-//
-//   factory MovieDetails.fromJson(Map<String, dynamic> json) {
-//     return MovieDetails(
-//       posterPath: json['poster_path'],
-//       originalTitle: json['original_title'],
-//       overview: json['overview'],
-//       popularity: json['popularity'],
-//       releaseDate: json['release_date'],
-//     );
-//   }
-// }
+class UpcomingMovies {
+  final List<dynamic> result;
+
+  UpcomingMovies({this.result});
+
+  factory UpcomingMovies.fromJson(Map<String, dynamic> json) {
+    List<dynamic> data = json['results'];
+    // print(data);
+    return UpcomingMovies(
+        result: data);
+  }
+}
+
+class TopRatedMovies {
+  final List<dynamic> result;
+
+  TopRatedMovies({this.result});
+
+  factory TopRatedMovies.fromJson(Map<String, dynamic> json) {
+    List<dynamic> data = json['results'];
+    // print(data);
+    return TopRatedMovies(
+        result: data);
+  }
+}
+
