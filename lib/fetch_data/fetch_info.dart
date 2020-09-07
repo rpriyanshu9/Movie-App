@@ -53,3 +53,15 @@ $baseURL/movie/top_rated?api_key=$_apiKey&language=en-US&page=1""");
     throw Exception("Failed to load");
   }
 }
+
+Future<MovieTrailer> fetchMovieTrailer(int movieId) async {
+  String _apiKey = apiKey;
+  String baseURL = "https://api.themoviedb.org/3";
+  final response = await http.get("""
+$baseURL/movie/$movieId/videos?api_key=$_apiKey&language=en-US""");
+  if (response.statusCode == 200) {
+    return MovieTrailer.fromJson(json.decode(response.body));
+  } else {
+    throw Exception("Failed to load");
+  }
+}

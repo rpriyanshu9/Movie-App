@@ -61,3 +61,13 @@ class TopRatedMovies {
   }
 }
 
+class MovieTrailer {
+  final List<dynamic> result;
+
+  MovieTrailer({this.result});
+
+  factory MovieTrailer.fromJson(Map<String, dynamic> json) {
+    List<dynamic> data = json['results'];
+    return MovieTrailer(result: data);
+  }
+}
