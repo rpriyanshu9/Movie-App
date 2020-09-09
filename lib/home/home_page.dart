@@ -4,6 +4,7 @@ import 'package:movie_app/models/movies.dart';
 import 'package:movie_app/screens/popular_movies.dart';
 import 'package:movie_app/shared/config.dart';
 import 'package:movie_app/shared/dark_theme.dart';
+import 'package:movie_app/shared/loading.dart';
 import 'package:movie_app/shared/text_style.dart';
 import 'package:movie_app/shared/ui_helper.dart';
 
@@ -20,6 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<PopularMovies> futurePopularMovies;
   Future<UpcomingMovies> futureUpcomingMovies;
   Future<TopRatedMovies> futureTopRatedMovies;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -49,138 +51,134 @@ class _MyHomePageState extends State<MyHomePage> {
               label: Text(""))
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
+      body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Column(
-            children: [
-              FutureBuilder<PopularMovies>(
-                future: futurePopularMovies,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Container(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("Popular Movies",
-                              style: headerStyle.copyWith(
-                                  color: MyTheme.isDark
-                                      ? Colors.white
-                                      : Colors.black)),
-                          UIHelper.verticalSpace(16),
-                          Container(
-                            height: 250,
-                            child: ListView.builder(
-                              itemCount: snapshot.data.result.length,
-                              physics: BouncingScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                final event = snapshot.data.result[index];
-                                return PopularMoviesCard(event);
-                              },
-                            ),
+          child: Container(
+            child: FutureBuilder<PopularMovies>(
+              future: futurePopularMovies,
+              builder: (context, snapshot) {
+                if (snapshot.data==null) {
+                  return Container(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                } else {
+                  return Container(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text("Popular Movies",
+                            style: headerStyle.copyWith(
+                                color: MyTheme.isDark
+                                    ? Colors.white
+                                    : Colors.black)),
+                        UIHelper.verticalSpace(16),
+                        Container(
+                          height: 250,
+                          child: ListView.builder(
+                            itemCount: snapshot.data.result.length,
+                            physics: BouncingScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              final event = snapshot.data.result[index];
+                              return PopularMoviesCard(event);
+                            },
                           ),
-                        ],
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Container(
-                        child: Center(child: Text("${snapshot.error}")));
-                  } else {
-                    return Text("Loading..");
-                  }
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              FutureBuilder<UpcomingMovies>(
-                future: futureUpcomingMovies,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Container(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("Upcoming Movies",
-                              style: headerStyle.copyWith(
-                                  color: MyTheme.isDark
-                                      ? Colors.white
-                                      : Colors.black)),
-                          UIHelper.verticalSpace(16),
-                          Container(
-                            height: 250,
-                            child: ListView.builder(
-                              itemCount: snapshot.data.result.length,
-                              physics: BouncingScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                final event = snapshot.data.result[index];
-                                return UpComingMoviesCard(event);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Container(
-                        child: Center(child: Text("${snapshot.error}")));
-                  } else {
-                    return Text("Loading..");
-                  }
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              FutureBuilder<TopRatedMovies>(
-                future: futureTopRatedMovies,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Container(
-                      width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("Top Rated",
-                              style: headerStyle.copyWith(
-                                  color: MyTheme.isDark
-                                      ? Colors.white
-                                      : Colors.black)),
-                          UIHelper.verticalSpace(16),
-                          Container(
-                            height: 250,
-                            child: ListView.builder(
-                              itemCount: snapshot.data.result.length,
-                              physics: BouncingScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                final event = snapshot.data.result[index];
-                                return TopRatedMoviesCard(event);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Container(
-                        child: Center(child: Text("${snapshot.error}")));
-                  } else {
-                    return Text("Loading..");
-                  }
-                },
-              ),
-            ],
+                        ),
+                      ],
+                    ),
+                  );
+                } 
+              },
+            ),
+          )
+          //
+          // FutureBuilder<UpcomingMovies>(
+          //   future: futureUpcomingMovies,
+          //   builder: (context, snapshot) {
+          //     if (snapshot.hasData) {
+          //       return Container(
+          //         width: MediaQuery.of(context).size.width * 0.9,
+          //         padding: const EdgeInsets.only(left: 16),
+          //         child: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: <Widget>[
+          //             Text("Upcoming Movies",
+          //                 style: headerStyle.copyWith(
+          //                     color: MyTheme.isDark
+          //                         ? Colors.white
+          //                         : Colors.black)),
+          //             UIHelper.verticalSpace(16),
+          //             Container(
+          //               height: 250,
+          //               child: ListView.builder(
+          //                 itemCount: snapshot.data.result.length,
+          //                 physics: BouncingScrollPhysics(),
+          //                 scrollDirection: Axis.horizontal,
+          //                 itemBuilder: (context, index) {
+          //                   final event = snapshot.data.result[index];
+          //                   return UpComingMoviesCard(event);
+          //                 },
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       );
+          //     } else if (snapshot.hasError) {
+          //       return Container(
+          //           child: Center(child: Text("${snapshot.error}")));
+          //     } else {
+          //       return Text("Loading..");
+          //     }
+          //   },
+          // ),
+          // SizedBox(
+          //   height: 10.0,
+          // ),
+          // FutureBuilder<TopRatedMovies>(
+          //   future: futureTopRatedMovies,
+          //   builder: (context, snapshot) {
+          //     if (snapshot.hasData) {
+          //       return Container(
+          //         width: MediaQuery.of(context).size.width,
+          //         padding: const EdgeInsets.only(left: 16),
+          //         child: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: <Widget>[
+          //             Text("Top Rated",
+          //                 style: headerStyle.copyWith(
+          //                     color: MyTheme.isDark
+          //                         ? Colors.white
+          //                         : Colors.black)),
+          //             UIHelper.verticalSpace(16),
+          //             Container(
+          //               height: 250,
+          //               child: ListView.builder(
+          //                 itemCount: snapshot.data.result.length,
+          //                 physics: BouncingScrollPhysics(),
+          //                 scrollDirection: Axis.horizontal,
+          //                 itemBuilder: (context, index) {
+          //                   final event = snapshot.data.result[index];
+          //                   return TopRatedMoviesCard(event);
+          //                 },
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       );
+          //     } else if (snapshot.hasError) {
+          //       return Container(
+          //           child: Center(child: Text("${snapshot.error}")));
+          //     } else {
+          //       return Text("Loading..");
+          //     }
+          //   },
+          // ),
+
           ),
-        ),
-      ),
     );
   }
 }
@@ -373,5 +371,3 @@ class TopRatedMoviesCard extends StatelessWidget {
     );
   }
 }
-
-
