@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/fetch_data/fetch_info.dart';
 import 'package:movie_app/models/movies.dart';
-import 'package:movie_app/screens/popular_movies.dart';
+import 'package:movie_app/screens/moviedetails.dart';
 import 'package:movie_app/shared/dark_theme.dart';
 import 'package:movie_app/shared/text_style.dart';
 import 'package:movie_app/shared/ui_helper.dart';
