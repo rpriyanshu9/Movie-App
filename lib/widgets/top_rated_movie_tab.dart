@@ -105,7 +105,7 @@ class TopRatedMoviesCard extends StatelessWidget {
                 child: Hero(
                   tag: event['backdrop_path'],
                   child: Image.network(
-                    "https://image.tmdb.org/t/p/w300" + event['backdrop_path'],
+                    "https://image.tmdb.org/t/p/w1280" + event['backdrop_path'],
                     fit: BoxFit.cover,
                   ),
                 ),

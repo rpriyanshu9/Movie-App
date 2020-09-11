@@ -193,7 +193,7 @@ $baseURL/movie/${widget.movieId}?api_key=$_apiKey&language=en-US""");
                                 color: Colors.blue,
                                 onPressed: () {
                                   _launchInBrowser(
-                                      _launchUrl + movieTrailer['key']);
+                                      _launchUrl + movieTrailer['results'][0]['key']);
                                 },
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
