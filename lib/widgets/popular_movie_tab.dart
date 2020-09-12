@@ -23,7 +23,7 @@ class _PopularMovieTabState extends State<PopularMovieTab> {
   bool actionSelect = false,
       comedySelect = false,
       dramaSelect = false,
-      horrorSelect = false;
+      horrorSelect = true;
 
   Future getPopularMovies() async {
     String _apiKey = apiKey;
@@ -49,12 +49,37 @@ class _PopularMovieTabState extends State<PopularMovieTab> {
     http.Response response = await http.get(
         "https://api.themoviedb.org/3/discover/movie?api_key=$_apiKey&language=en-US&region=US&sort_by=popularity.asc&include_adult=false&include_video=false&page=2&with_genres=$genre");
     if (response.statusCode == 200) {
-      futureActionGenre = json.decode(response.body);
-      print(futureActionGenre);
-      if (futureActionGenre != null) {
-        setState(() {
-          _isGenreLoaded = true;
-        });
+      if (genre == 28) {
+        futureActionGenre = json.decode(response.body);
+        if (futureActionGenre != null) {
+          setState(() {
+            _isGenreLoaded = true;
+          });
+        }
+      }
+      else if (genre == 35) {
+        futureComedyGenre = json.decode(response.body);
+        if (futureComedyGenre != null) {
+          setState(() {
+            _isGenreLoaded = true;
+          });
+        }
+      }
+      else if (genre == 18) {
+        futureDramaGenre = json.decode(response.body);
+        if (futureDramaGenre != null) {
+          setState(() {
+            _isGenreLoaded = true;
+          });
+        }
+      }
+      else{
+        futureHorrorGenre = json.decode(response.body);
+        if (futureHorrorGenre != null) {
+          setState(() {
+            _isGenreLoaded = true;
+          });
+        }
       }
     } else {
       setState(() {
@@ -68,6 +93,9 @@ class _PopularMovieTabState extends State<PopularMovieTab> {
     super.initState();
     getPopularMovies();
     getGenreMovies(28);
+    getGenreMovies(35);
+    getGenreMovies(18);
+    getGenreMovies(36);
   }
 
   @override
@@ -120,77 +148,85 @@ class _PopularMovieTabState extends State<PopularMovieTab> {
                         children: [
                           ChoiceChip(
                             label: Text("Action"),
+                            labelStyle: TextStyle(
+                              color: MyTheme.isDark ? Colors.white : Colors.black,
+                            ),
                             avatar: CircleAvatar(
-                              backgroundColor: Theme.of(context).accentColor,
-                              child: Text('A'),
+                              backgroundColor: Colors.deepPurpleAccent,
+                              child: Text('A',style: TextStyle(color: MyTheme.isDark ? Colors.white : Colors.black,),),
                             ),
                             elevation: 15.0,
                             selected: actionSelect,
-                            selectedColor: Theme.of(context).accentColor,
+                            selectedColor: Colors.deepPurple,
                             onSelected: (bool selected) {
                               setState(() {
                                 actionSelect = !actionSelect;
                                 dramaSelect = false;
                                 comedySelect = false;
                                 horrorSelect = false;
-                                print("Action Selected");
                               });
                             },
                           ),
                           ChoiceChip(
                             label: Text("Comedy"),
+                            labelStyle: TextStyle(
+                              color: MyTheme.isDark ? Colors.white : Colors.black,
+                            ),
                             avatar: CircleAvatar(
-                              backgroundColor: Theme.of(context).accentColor,
-                              child: Text('C'),
+                              backgroundColor: Colors.deepPurpleAccent,
+                              child: Text('C',style: TextStyle(color: MyTheme.isDark ? Colors.white : Colors.black,),),
                             ),
                             elevation: 15.0,
                             selected: comedySelect,
-                            selectedColor: Theme.of(context).accentColor,
+                            selectedColor: Colors.deepPurple,
                             onSelected: (bool selected) {
                               setState(() {
                                 actionSelect = false;
                                 dramaSelect = false;
                                 comedySelect = !comedySelect;
                                 horrorSelect = false;
-                                print("Comedy Selected");
                               });
                             },
                           ),
                           ChoiceChip(
                             label: Text("Drama"),
+                            labelStyle: TextStyle(
+                              color: MyTheme.isDark ? Colors.white : Colors.black,
+                            ),
                             avatar: CircleAvatar(
-                              backgroundColor: Theme.of(context).accentColor,
-                              child: Text('D'),
+                              backgroundColor: Colors.deepPurpleAccent,
+                              child: Text('D',style: TextStyle(color: MyTheme.isDark ? Colors.white : Colors.black,),),
                             ),
                             elevation: 15.0,
                             selected: dramaSelect,
-                            selectedColor: Theme.of(context).accentColor,
+                            selectedColor: Colors.deepPurple,
                             onSelected: (bool selected) {
                               setState(() {
                                 actionSelect = false;
                                 dramaSelect = !dramaSelect;
                                 comedySelect = false;
                                 horrorSelect = false;
-                                print("Drama Selected");
                               });
                             },
                           ),
                           ChoiceChip(
                             label: Text("Horror"),
+                            labelStyle: TextStyle(
+                              color: MyTheme.isDark ? Colors.white : Colors.black,
+                            ),
                             avatar: CircleAvatar(
-                              backgroundColor: Theme.of(context).accentColor,
-                              child: Text('H'),
+                              backgroundColor: Colors.deepPurpleAccent,
+                              child: Text('H',style: TextStyle(color: MyTheme.isDark ? Colors.white : Colors.black,),),
                             ),
                             elevation: 15.0,
                             selected: horrorSelect,
-                            selectedColor: Theme.of(context).accentColor,
+                            selectedColor: Colors.deepPurple,
                             onSelected: (bool selected) {
                               setState(() {
                                 actionSelect = false;
                                 dramaSelect = false;
                                 comedySelect = false;
                                 horrorSelect = !horrorSelect;
-                                print("Horror Selected");
                               });
                             },
                           ),
@@ -198,7 +234,8 @@ class _PopularMovieTabState extends State<PopularMovieTab> {
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 8.0),
-                        child: ListView.builder(
+                        child: actionSelect ? 
+                        ListView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: futureActionGenre['results'].length,
@@ -206,6 +243,36 @@ class _PopularMovieTabState extends State<PopularMovieTab> {
                             return ListTile(
                               title: Text(
                                   "${futureActionGenre['results'][index]['original_title']}"),
+                            );
+                          },
+                        ): dramaSelect ? ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: futureDramaGenre['results'].length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text(
+                                  "${futureDramaGenre['results'][index]['original_title']}"),
+                            );
+                          },
+                        ): comedySelect?ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: futureComedyGenre['results'].length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text(
+                                  "${futureComedyGenre['results'][index]['original_title']}"),
+                            );
+                          },
+                        ): ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: futureHorrorGenre['results'].length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text(
+                                  "${futureHorrorGenre['results'][index]['original_title']}"),
                             );
                           },
                         ),
