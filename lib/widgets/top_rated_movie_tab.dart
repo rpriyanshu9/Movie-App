@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:movie_app/fetch_data/fetch_info.dart';
-import 'package:movie_app/models/movies.dart';
+import 'package:http/http.dart' as http;
 import 'package:movie_app/screens/moviedetails.dart';
+import 'package:movie_app/shared/api_key.dart';
 import 'package:movie_app/shared/dark_theme.dart';
 import 'package:movie_app/shared/text_style.dart';
 import 'package:movie_app/shared/ui_helper.dart';
@@ -12,63 +14,72 @@ class TopRatedMovieTab extends StatefulWidget {
 }
 
 class _TopRatedMovieTabState extends State<TopRatedMovieTab> {
-  Future<TopRatedMovies> futureTopRatedMovies;
+  Map futureTopRatedMovies;
+  bool _isCarouselLoaded = false;
+
+  Future getTopMovies() async {
+    String _apiKey = apiKey;
+    String baseURL = "https://api.themoviedb.org/3";
+    http.Response response = await http
+        .get("$baseURL/movie/top_rated?api_key=$_apiKey&language=en-US&page=1");
+    if (response.statusCode == 200) {
+      futureTopRatedMovies = json.decode(response.body);
+      if (futureTopRatedMovies != null) {
+        setState(() {
+          _isCarouselLoaded = true;
+        });
+      }
+    } else {
+      setState(() {
+        _isCarouselLoaded = false;
+      });
+    }
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    futureTopRatedMovies = fetchTopRatedMovies();
+    getTopMovies();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(padding: EdgeInsets.symmetric(vertical: 10.0),
-      child: Container(
-        child: FutureBuilder<TopRatedMovies>(
-            future: futureTopRatedMovies,
-            builder: (context, snapshot) {
-              if (snapshot.data == null) {
-                  return Container(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-              else {
-                return Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  padding: const EdgeInsets.only(left: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text("Top Rated Movies",
-                          style: headerStyle.copyWith(
-                              color: MyTheme.isDark
-                                  ? Colors.white
-                                  : Colors.black)),
-                      UIHelper.verticalSpace(16),
-                      Container(
-                        height: 250,
-                        child: ListView.builder(
-                          itemCount: snapshot.data.result.length,
-                          physics: BouncingScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            final event = snapshot.data.result[index];
-                            return TopRatedMoviesCard(event);
-                          },
-                        ),
+      body: (!_isCarouselLoaded)
+          ? Container(
+              child: Center(
+              child: CircularProgressIndicator(),
+            ))
+          : Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.9,
+                padding: const EdgeInsets.only(left: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text("Top Rated Movies",
+                        style: headerStyle.copyWith(
+                            color:
+                                MyTheme.isDark ? Colors.white : Colors.black)),
+                    UIHelper.verticalSpace(16),
+                    Container(
+                      height: 250,
+                      child: ListView.builder(
+                        itemCount: futureTopRatedMovies['results'].length,
+                        physics: BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          final event = futureTopRatedMovies['results'][index];
+                          return TopRatedMoviesCard(event);
+                        },
                       ),
-                    ],
-                  ),
-                );
-              }
-            },
-          ),
-      ),
-      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
     );
   }
 }

@@ -1,11 +1,10 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:movie_app/fetch_data/fetch_info.dart';
-import 'package:movie_app/models/movies.dart';
+import 'package:http/http.dart' as http;
 import 'package:movie_app/shared/api_key.dart';
 import 'package:movie_app/shared/config.dart';
 import 'package:movie_app/shared/dark_theme.dart';
-import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 const String baseUrl = 'https://api.themoviedb.org/3';
@@ -192,8 +191,8 @@ $baseURL/movie/${widget.movieId}?api_key=$_apiKey&language=en-US""");
                               child: RaisedButton(
                                 color: Colors.blue,
                                 onPressed: () {
-                                  _launchInBrowser(
-                                      _launchUrl + movieTrailer['results'][0]['key']);
+                                  _launchInBrowser(_launchUrl +
+                                      movieTrailer['results'][0]['key']);
                                 },
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
