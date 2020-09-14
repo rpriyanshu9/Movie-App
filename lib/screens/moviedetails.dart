@@ -87,6 +87,7 @@ $baseURL/movie/${widget.movieId}?api_key=$_apiKey&language=en-US""");
 
   @override
   Widget build(BuildContext context) {
+    bool loaded = _isDetailsLoaded && _isTrailerLoaded;
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
@@ -104,7 +105,7 @@ $baseURL/movie/${widget.movieId}?api_key=$_apiKey&language=en-US""");
               label: Text(""))
         ],
       ),
-      body: (!_isDetailsLoaded && !_isTrailerLoaded)
+      body: (!loaded)
           ? Container(
               child: Center(child: CircularProgressIndicator()),
             )

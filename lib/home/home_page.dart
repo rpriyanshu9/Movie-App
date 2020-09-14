@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:movie_app/screens/moviedetails.dart';
+import 'package:movie_app/shared/api_key.dart';
 import 'package:movie_app/shared/config.dart';
 import 'package:movie_app/shared/dark_theme.dart';
 import 'package:movie_app/widgets/popular_movie_tab.dart';
@@ -59,21 +64,26 @@ class _MyHomePageState extends State<MyHomePage>
           indicatorColor: Colors.white,
         ),
         actions: [
-          FlatButton.icon(
+          IconButton(
+              icon: !MyTheme.isDark
+                  ? Icon(Icons.brightness_low)
+                  : Icon(Icons.brightness_high),
               onPressed: () {
                 setState(() {
                   currentTheme.switchTheme();
                 });
-              },
-              icon: !MyTheme.isDark
-                  ? Icon(Icons.brightness_low)
-                  : Icon(Icons.brightness_high),
-              label: Text(""))
+              }),
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(context: context, delegate: MovieSearch());
+            },
+          )
         ],
       ),
       body: Container(
           child: TabBarView(
-        children: <Widget>[
+            children: <Widget>[
           PopularMovieTab(),
           UpcomingMovieTab(),
           TopRatedMovieTab(),
@@ -81,6 +91,106 @@ class _MyHomePageState extends State<MyHomePage>
         ],
         controller: _tabController,
       )),
+    );
+  }
+}
+
+class MovieSearch extends SearchDelegate {
+  Map searchResults;
+  bool searchLoaded = false;
+
+  Future getSearchResults(String myquery) async {
+    if (myquery == "") {
+      searchResults = null;
+    } else {
+      http.Response response = await http.get(
+          "https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=en-US&query=$myquery&page=1&include_adult=false");
+      // if (response.statusCode==200){
+      searchResults = json.decode(response.body);
+    }
+    print(searchResults);
+    if (searchResults != null) {
+      searchLoaded = true;
+    } else {
+      searchLoaded = false;
+    }
+  }
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    return Theme.of(context);
+  }
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            query = "";
+          })
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Container(
+        child: ListView.builder(
+      itemCount: searchResults["results"].length ?? 0,
+      physics: BouncingScrollPhysics(),
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(searchResults["results"][index]['original_title']),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PopularMovie(
+                      movieId: searchResults["results"][index]['id']),
+                ));
+          },
+        );
+      },
+    ));
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    getSearchResults(query);
+    return Container(
+      child: (!searchLoaded)
+          ? Container()
+          : ListView.builder(
+              itemCount: (searchResults["results"] == null)
+                  ? 0
+                  : searchResults["results"].length,
+              physics: BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title:
+                      Text(searchResults["results"][index]['original_title']),
+                  onTap: () {
+// query=searchResults["results"][index]['original_title'];
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PopularMovie(
+                              movieId: searchResults["results"][index]['id']),
+                        ));
+                  },
+                );
+              },
+            ),
     );
   }
 }
