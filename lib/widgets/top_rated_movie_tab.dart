@@ -106,7 +106,7 @@ class TopRatedMoviesCard extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => PopularMovie(movieId: movieID)));
+                      builder: (context) => MovieDetails(movieId: movieID)));
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),

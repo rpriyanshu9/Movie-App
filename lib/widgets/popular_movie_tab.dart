@@ -284,6 +284,15 @@ class _PopularMovieTabState extends State<PopularMovieTab> {
                               itemCount: futureActionGenre['results'].length,
                               itemBuilder: (context, index) {
                                 return ListTile(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => MovieDetails(
+                                                  movieId: futureActionGenre[
+                                                      'results'][index]['id'],
+                                                )));
+                                  },
                                   title: Text(
                                       "${futureActionGenre['results'][index]['original_title']}"),
                                 );
@@ -296,6 +305,13 @@ class _PopularMovieTabState extends State<PopularMovieTab> {
                                   itemCount: futureDramaGenre['results'].length,
                                   itemBuilder: (context, index) {
                                     return ListTile(
+                                      onTap: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    MovieDetails(
+                                                      movieId: futureDramaGenre['results'][index]['id'],)));
+                                      },
                                       title: Text(
                                           "${futureDramaGenre['results'][index]['original_title']}"),
                                     );
@@ -309,6 +325,13 @@ class _PopularMovieTabState extends State<PopularMovieTab> {
                                           futureComedyGenre['results'].length,
                                       itemBuilder: (context, index) {
                                         return ListTile(
+                                          onTap: () {
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        MovieDetails(
+                                                          movieId: futureComedyGenre['results'][index]['id'],)));
+                                          },
                                           title: Text(
                                               "${futureComedyGenre['results'][index]['original_title']}"),
                                         );
@@ -321,6 +344,13 @@ class _PopularMovieTabState extends State<PopularMovieTab> {
                                           futureHorrorGenre['results'].length,
                                       itemBuilder: (context, index) {
                                         return ListTile(
+                                          onTap: () {
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        MovieDetails(
+                                                          movieId: futureHorrorGenre['results'][index]['id'],)));
+                                          },
                                           title: Text(
                                               "${futureHorrorGenre['results'][index]['original_title']}"),
                                         );
@@ -355,7 +385,7 @@ class PopularMoviesCard extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => PopularMovie(movieId: movieID)));
+                      builder: (context) => MovieDetails(movieId: movieID)));
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),

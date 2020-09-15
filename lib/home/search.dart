@@ -123,7 +123,7 @@ class _SearchBarState extends State<SearchBar> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => PopularMovie(
+                                  builder: (context) => MovieDetails(
                                       movieId: searchResults["results"][index]
                                           ['id']),
                                 ));

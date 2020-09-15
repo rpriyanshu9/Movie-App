@@ -9,32 +9,33 @@ import 'package:url_launcher/url_launcher.dart';
 
 const String baseUrl = 'https://api.themoviedb.org/3';
 
-class PopularMovie extends StatefulWidget {
+class MovieDetails extends StatefulWidget {
   final int movieId;
 
-  PopularMovie({this.movieId});
+  MovieDetails({this.movieId});
 
   @override
-  _PopularMovieState createState() => _PopularMovieState();
+  _MovieDetailsState createState() => _MovieDetailsState();
 }
 
-class _PopularMovieState extends State<PopularMovie> {
+class _MovieDetailsState extends State<MovieDetails> {
   Map movieDetails, movieTrailer;
   bool _isDetailsLoaded = false;
   bool _isTrailerLoaded = false;
 
   Future getMovieDetails() async {
+    print(widget.movieId);
     String _apiKey = apiKey;
     String baseURL = "https://api.themoviedb.org/3";
     http.Response response = await http.get("""
 $baseURL/movie/${widget.movieId}?api_key=$_apiKey&language=en-US""");
     if (response.statusCode == 200) {
       movieDetails = json.decode(response.body);
-      if (movieDetails != null) {
-        setState(() {
-          _isDetailsLoaded = true;
-        });
-      }
+    }
+    if (movieDetails != null) {
+      setState(() {
+        _isDetailsLoaded = true;
+      });
     } else {
       setState(() {
         _isDetailsLoaded = false;
@@ -52,6 +53,7 @@ $baseURL/movie/${widget.movieId}?api_key=$_apiKey&language=en-US""");
     } else {
       throw Exception("Failed to laod");
     }
+    print(movieTrailer['results'].length);
     if (movieTrailer != null) {
       setState(() {
         _isTrailerLoaded = true;
@@ -107,114 +109,123 @@ $baseURL/movie/${widget.movieId}?api_key=$_apiKey&language=en-US""");
       ),
       body: (!loaded)
           ? Container(
-              child: Center(child: CircularProgressIndicator()),
-            )
+        child: Center(child: CircularProgressIndicator()),
+      )
           : Padding(
-              padding: EdgeInsets.symmetric(vertical: 10.0),
-              child: ListView(
-                children: [
-                  Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Column(
+        padding: EdgeInsets.symmetric(vertical: 10.0),
+        child: ListView(
+          children: [
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: (movieDetails['poster_path'] == null) ? Text(
+                        "Poster not available", style: TextStyle(
+                          fontSize: 18.0, fontFamily: 'Roboto'
+                      ),) : Image.network(
+                        "https://image.tmdb.org/t/p/w300" +
+                            movieDetails['poster_path'],
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Wrap(
+                        spacing: 12.0,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Image.network(
-                              "https://image.tmdb.org/t/p/w300" +
-                                  movieDetails['poster_path'],
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Wrap(
-                              spacing: 12.0,
-                              children: [
-                                Chip(
-                                  label: Text(
-                                    movieDetails['original_title'],
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                Chip(
-                                  label: Text(movieDetails['release_date'],
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                      )),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.star,
-                                  color: Colors.yellow,
-                                ),
-                                Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 2.0)),
-                                Text('${movieDetails['popularity']}',
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                    )),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(
-                              movieDetails['overview'],
-                              textAlign: TextAlign.center,
+                          Chip(
+                            label: Text(
+                              movieDetails['original_title'],
                               style: TextStyle(
-                                  fontSize: 18.0, fontFamily: 'Roboto'),
-                            ),
-                          ),
-                        ],
-                      )),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  20.0, 0.0, 20.0, 10.0),
-                              child: RaisedButton(
-                                color: Colors.blue,
-                                onPressed: () {
-                                  _launchInBrowser(_launchUrl +
-                                      movieTrailer['results'][0]['key']);
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.live_tv),
-                                    Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 5.0)),
-                                    Text("Watch Trailer"),
-                                  ],
-                                ),
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
+                          ),
+                          Chip(
+                            label: Text(movieDetails['release_date'],
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                )),
                           ),
                         ],
                       ),
                     ),
-                  )
-                ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.star,
+                            color: Colors.yellow,
+                          ),
+                          Padding(
+                              padding:
+                              EdgeInsets.symmetric(horizontal: 2.0)),
+                          Text('${movieDetails['popularity']}',
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                              )),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: (movieDetails['overview'] == null ||
+                          movieDetails['overview'] == "") ? Text(
+                          "Overview not available", style: TextStyle(
+                          fontSize: 18.0, fontFamily: 'Roboto')) : Text(
+                        movieDetails['overview'],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 18.0, fontFamily: 'Roboto'),
+                      ),
+                    ),
+                  ],
+                )),
+            Container(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                            20.0, 0.0, 20.0, 10.0),
+                        child: (movieTrailer['results'].length == 0)
+                            ? Container()
+                            : RaisedButton(
+                          color: Colors.blue,
+                          onPressed: () {
+                            print(movieTrailer['results']);
+                            _launchInBrowser(_launchUrl +
+                                movieTrailer['results'][0]['key']);
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.live_tv),
+                              Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 5.0)),
+                              Text("Watch Trailer"),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
