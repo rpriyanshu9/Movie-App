@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:movie_app/shared/api_key.dart';
 import 'package:movie_app/shared/config.dart';
 import 'package:movie_app/shared/dark_theme.dart';
+import 'package:movie_app/shared/loading.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const String baseUrl = 'https://api.themoviedb.org/3';
@@ -65,7 +66,6 @@ $baseURL/movie/${widget.movieId}?api_key=$_apiKey&language=en-US""");
     }
   }
 
-  Future<void> _launched;
   String _launchUrl = "https://www.youtube.com/watch?v=";
 
   Future<void> _launchInBrowser(String url) async {
@@ -81,7 +81,6 @@ $baseURL/movie/${widget.movieId}?api_key=$_apiKey&language=en-US""");
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getMovieDetails();
     getTrailerDetails();
@@ -108,122 +107,127 @@ $baseURL/movie/${widget.movieId}?api_key=$_apiKey&language=en-US""");
         ],
       ),
       body: (!loaded)
-          ? Container(
-        child: Center(child: CircularProgressIndicator()),
-      )
-          : Padding(
-        padding: EdgeInsets.symmetric(vertical: 10.0),
-        child: ListView(
-          children: [
-            Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: (movieDetails['poster_path'] == null) ? Text(
-                        "Poster not available", style: TextStyle(
-                          fontSize: 18.0, fontFamily: 'Roboto'
-                      ),) : Image.network(
-                        "https://image.tmdb.org/t/p/w300" +
-                            movieDetails['poster_path'],
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Wrap(
-                        spacing: 12.0,
-                        children: [
-                          Chip(
-                            label: Text(
-                              movieDetails['original_title'],
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+          ? Loading()
+          : ListView(
+              children: [
+                (movieDetails['backdrop_path'] == null)
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Center(
+                          child: Text(
+                            "Poster not available",
+                            style:
+                                TextStyle(fontSize: 18.0, fontFamily: 'Roboto'),
                           ),
-                          Chip(
-                            label: Text(movieDetails['release_date'],
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.star,
-                            color: Colors.yellow,
-                          ),
-                          Padding(
-                              padding:
-                              EdgeInsets.symmetric(horizontal: 2.0)),
-                          Text('${movieDetails['popularity']}',
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                              )),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: (movieDetails['overview'] == null ||
-                          movieDetails['overview'] == "") ? Text(
-                          "Overview not available", style: TextStyle(
-                          fontSize: 18.0, fontFamily: 'Roboto')) : Text(
-                        movieDetails['overview'],
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 18.0, fontFamily: 'Roboto'),
-                      ),
-                    ),
-                  ],
-                )),
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                            20.0, 0.0, 20.0, 10.0),
-                        child: (movieTrailer['results'].length == 0)
-                            ? Container()
-                            : RaisedButton(
-                          color: Colors.blue,
-                          onPressed: () {
-                            print(movieTrailer['results']);
-                            _launchInBrowser(_launchUrl +
-                                movieTrailer['results'][0]['key']);
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.live_tv),
-                              Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 5.0)),
-                              Text("Watch Trailer"),
-                            ],
+                        ),
+                      )
+                    : ClipRRect(
+                        child: Hero(
+                          tag: movieDetails['backdrop_path'],
+                          child: Image.network(
+                            "https://image.tmdb.org/t/p/w1280" +
+                                movieDetails['backdrop_path'],
+                            fit: BoxFit.cover,
+                            height: 360,
+                            alignment: Alignment.topCenter,
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                SizedBox(
+                  height: 8.0,
                 ),
-              ),
-            )
-          ],
+                ListTile(
+                  title: Text(
+                    movieDetails['original_title'],
+                    style: TextStyle(
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Wrap(
+                    direction: Axis.horizontal,
+                    alignment: WrapAlignment.start,
+                    spacing: 10.0,
+                    children: [
+                      for (var item in movieDetails['genres'])
+                        _chipBuilder(item['name'])
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: (movieDetails['overview'] == null ||
+                          movieDetails['overview'] == "")
+                      ? Text("Overview not available",
+                          style:
+                              TextStyle(fontSize: 18.0, fontFamily: 'Roboto'))
+                      : Text(
+                          movieDetails['overview'],
+                          textAlign: TextAlign.center,
+                          style:
+                              TextStyle(fontSize: 18.0, fontFamily: 'Roboto'),
+                        ),
+                ),
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                                20.0, 0.0, 20.0, 10.0),
+                            child: (movieTrailer['results'].length == 0)
+                                ? Container()
+                                : RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30.0)),
+                                    color: Colors.blue,
+                                    onPressed: () {
+                                      print(movieTrailer['results']);
+                                      _launchInBrowser(_launchUrl +
+                                          movieTrailer['results'][0]['key']);
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.live_tv),
+                                        Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 5.0)),
+                                        Text(
+                                          "Watch Trailer",
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+    );
+  }
+
+  Widget _chipBuilder(String genreName) {
+    return Chip(
+      elevation: 15.0,
+      label: Text(
+        genreName,
+        style: TextStyle(
+          fontSize: 18.0,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
